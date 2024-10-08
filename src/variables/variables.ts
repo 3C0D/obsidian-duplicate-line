@@ -1,7 +1,5 @@
-import { arrow_down_from_line, arrow_down_narrow_wide, arrow_right_from_line, arrow_up_from_line } from "icons";
-import { addIcon } from "obsidian";
+import { CommandConfig, dupliSettings } from "./types";
 
-export * from "obsidian";
 
 export enum Direction {
 	Up,
@@ -11,26 +9,6 @@ export enum Direction {
 	Left,
 	Right,
 	RightDown,
-}
-
-
-export interface dupliSettings {
-	addSpaceBetween: boolean;
-	lineDown: boolean;
-	lineUp: boolean;
-	moveRight: boolean;
-	moveLeft: boolean;
-	selectionRight: boolean;
-	selectionLeft: boolean;
-	selectionUp: boolean;
-	selectionDown: boolean;
-	mixRightDown: boolean;
-	addNextOcc: boolean;
-	selAllOcc: boolean;
-	showOccurences: boolean;
-	matchCase: boolean;
-	color: string;
-	fontSize: number;
 }
 
 export const DEFAULT_SETTINGS: dupliSettings = {
@@ -51,20 +29,6 @@ export const DEFAULT_SETTINGS: dupliSettings = {
 	color: "#C6AB85",
 	fontSize: 1.2
 };
-
-export interface CommandConfig {
-	id: string;
-	name: string;
-	icon: string;
-	direction: Direction | null;
-	condition: string;
-	desc: string
-}
-
-addIcon('arrow-down-narrow-wide', arrow_down_narrow_wide)
-addIcon('arrow-down-from-line', arrow_down_from_line)
-addIcon('arrow-up-from-line', arrow_up_from_line)
-addIcon('arrow-right-from-line', arrow_right_from_line)
 
 export const commandsToCreate: Array<CommandConfig> = [
 	{
@@ -156,12 +120,3 @@ export const commandsToCreate: Array<CommandConfig> = [
 		desc: "recommanded shortcut ctrl shift L"
 	},
 ];
-
-declare module "obsidian" {
-	interface Editor {
-		addHighlights(ranges: EditorRange[], cls: string): void;
-		removeHighlights(cls: string): void;
-	}
-}
-
-

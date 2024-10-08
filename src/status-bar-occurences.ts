@@ -1,7 +1,6 @@
 import { debounce } from "obsidian";
 import DuplicateLine from "./main";
 import { getEditor, getContent } from "./utils";
-import { Console } from "./Console";
 import { escapeRegExp } from "lodash";
 
 export const handleSelectionChange = (plugin: DuplicateLine) => {
@@ -54,24 +53,22 @@ export function getOccurrences(plugin: DuplicateLine): number {
     if (!selection) return 0;
 
     if (!plugin.selectionRegex) {
-        Console.debug("compile regex 1", selection)
         compileRegex(plugin, selection);
     }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (plugin.selectionRegex!.source !== selection) {
-        Console.debug("compile regex 2", selection);
         compileRegex(plugin, selection);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const matches = [...text.matchAll(plugin.selectionRegex!)];
 
-    Console.debug("matches length", matches.length)
     return matches.length;
 }
 
 function compileRegex(plugin: DuplicateLine, selection: string) {
     let modifiers = 'g';
     if (!plugin.settings.matchCase) {
-        // Console.debug("yes")
         modifiers += 'i';
     }
     try {

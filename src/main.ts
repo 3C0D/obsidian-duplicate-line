@@ -1,19 +1,6 @@
-import {
-	Editor,
-	EditorChange,
-	EditorRange,
-	EditorTransaction,
-	Platform,
-	Plugin,
-} from "obsidian";
+import { Editor, EditorChange, EditorRange, EditorTransaction, Platform, Plugin } from "obsidian";
 import { DuplicateLineSettings } from "./settings";
-import {
-	CommandConfig,
-	DEFAULT_SETTINGS,
-	Direction,
-	commandsToCreate,
-	dupliSettings,
-} from "./types";
+import { CommandConfig, dupliSettings } from "./variables/types";
 import {
 	areObjectsEqual,
 	isNoSelection,
@@ -23,6 +10,7 @@ import {
 import { addNextOccurrence } from "./AddNextOccurrence";
 import { addAllOccurrences } from "./AddAllOccurrences";
 import { handleSelectionChange } from "./status-bar-occurences";
+import { commandsToCreate, DEFAULT_SETTINGS, Direction } from "./variables/variables";
 
 export default class DuplicateLine extends Plugin {
 	settings: dupliSettings;
@@ -85,12 +73,12 @@ export default class DuplicateLine extends Plugin {
 	}
 
 	duplicateLine = (editor: Editor, direction: Direction): void => {
-		let selections = editor.listSelections();
+		const selections = editor.listSelections();
 		let addedLines = 0;
 		const changes: EditorChange[] = [];
 		const newSelectionRanges: EditorRange[] = [];
 
-		for (let selection of selections) {
+		for (const selection of selections) {
 			const range = selectionToLine(editor, selection, direction);
 			const numberOfLines = range.to.line - range.from.line + 1;
 			let content = editor.getRange(range.from, range.to);
@@ -349,6 +337,7 @@ export default class DuplicateLine extends Plugin {
 					additionChange = {
 						from: range.to,
 						to: range.to,
+						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 						text: editor.getRange(deletionChange.from, deletionChange.to!),
 					}
 					break
@@ -371,6 +360,7 @@ export default class DuplicateLine extends Plugin {
 					additionChange = {
 						from: range.from,
 						to: range.from,
+						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 						text: editor.getRange(deletionChange.from, deletionChange.to!),
 					}
 					break

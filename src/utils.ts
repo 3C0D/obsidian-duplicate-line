@@ -5,10 +5,9 @@ import {
 	EditorSelection,
 	MarkdownView,
 } from "obsidian";
-import { Direction } from "./types";
 import { sortBy } from "lodash";
 import DuplicateLine from "./main";
-import { Console } from "./Console";
+import { Direction } from "./variables/variables";
 
 export function selectionToLine(
 	editor: Editor,
@@ -16,7 +15,6 @@ export function selectionToLine(
 	direction: Direction
 ): EditorRange {
 	let range = selectionToRange(selection, true);
-	const { from, to } = range;
 	const isEmptySelection = isNoSelection(selection);
 	const toLength = editor.getLine(range.to.line).length;
 
@@ -44,7 +42,7 @@ export function selectionToLine(
 			const ch = range.from.ch;
 			if (ch > 0) {
 				const currentLine = editor.getLine(line);
-				// find previous word (thks GPT)
+				// find previous word
 				let startOfWord = ch - 1;
 				while (
 					startOfWord >= 0 &&
@@ -69,7 +67,14 @@ export function selectionToLine(
 	}
 }
 
-export function areObjectsEqual(obj1: any, obj2: any) {
+
+
+interface Position {
+	line: number;
+	ch: number;
+}
+
+export function areObjectsEqual(obj1: Position, obj2: Position) {
 	return obj1.line === obj2.line && obj1.ch === obj2.ch;
 }
 
@@ -116,12 +121,10 @@ export const getSelectionContent = (
 	let wordRange;
 
 	if (selection) {
-		Console.debug("lastSelection", lastSelection)
 		wordRange = selectionToRange(lastSelection, true)
 	} else {
 		wordRange = ed.wordAt(lastSelection.head)
 	}
-	Console.debug("wordRange", wordRange)
 
 	// wordRange: EditorRange from: EditorPosition to: EditorPosition;
 	if (wordRange != null) {

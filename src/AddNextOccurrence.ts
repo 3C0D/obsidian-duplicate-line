@@ -1,17 +1,16 @@
-import {
-	Editor,
-} from "obsidian";
+import { Editor } from "obsidian";
 import { getContent, getSelectionContent, rangeToPositions, selectionToRange } from "./utils";
 
 export const addNextOccurrence = (editor: Editor) => {
-	let selections = editor.listSelections();
+	const selections = editor.listSelections();
 	const { word, wordRange, isWordSelected } = getSelectionContent(
 		editor,
 		selections
 	);
 	if (wordRange !== null && word) {
 		const doc = getContent(editor);
-		const [_,endPos] = rangeToPositions(wordRange);
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const [_, endPos] = rangeToPositions(wordRange);
 		const pos = editor.posToOffset(endPos);
 		let nextOccurrenceIndex = doc.indexOf(word, pos);
 		if (nextOccurrenceIndex !== -1) {
@@ -20,7 +19,7 @@ export const addNextOccurrence = (editor: Editor) => {
 				nextOccurrenceIndex + word.length
 			);
 
-			editor.removeHighlights("is-flashing"); 
+			editor.removeHighlights("is-flashing");
 
 			if (!isWordSelected)
 				selections[selections.length - 1] = {
@@ -37,7 +36,7 @@ export const addNextOccurrence = (editor: Editor) => {
 
 			editor.setSelections(selections);
 
-			for (const sel of selections){
+			for (const sel of selections) {
 				const range = selectionToRange(sel);
 				editor.addHighlights([range], "is-flashing");
 			}

@@ -1,6 +1,7 @@
 import { App, Platform, PluginSettingTab, Setting } from "obsidian";
-import { CommandConfig, commandsToCreate, dupliSettings } from "./types";
+import { CommandConfig, dupliSettings } from "./variables/types";
 import DuplicateLine from "./main";
+import { commandsToCreate } from "./variables/variables";
 
 export class DuplicateLineSettings extends PluginSettingTab {
 	constructor(app: App, public plugin: DuplicateLine) {
@@ -32,6 +33,7 @@ export class DuplicateLineSettings extends PluginSettingTab {
 					.setValue(this.plugin.settings.color)
 					.onChange(async (value) => {
 						this.plugin.settings.color = value;
+						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 						this.plugin.statusBarItemEl!.style.color = value;
 						await this.plugin.saveSettings();
 					})
@@ -44,6 +46,7 @@ export class DuplicateLineSettings extends PluginSettingTab {
 						.setDynamicTooltip()
 						.onChange(async (value) => {
 							this.plugin.settings.fontSize = value;
+							// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 							this.plugin.statusBarItemEl!.style.fontSize = `${value}em`;
 							await this.plugin.saveSettings();
 						});
@@ -86,7 +89,7 @@ export class DuplicateLineSettings extends PluginSettingTab {
 							this.plugin.addCommandToEditor(commandConfig, condition)
 						}
 						else {
-							await (this.app as any).commands.removeCommand(`duplicate-line:${commandConfig.id}`)//command id found in app.commands.commands...
+							this.app.commands.removeCommand(`duplicate-line:${commandConfig.id}`)
 						}
 						await this.plugin.saveSettings();
 					});
