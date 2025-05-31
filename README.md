@@ -102,7 +102,7 @@ When you select text, the status bar displays the number of occurrences found in
 
 ### 🎨 Color Picker in Action
 
-![Color Picker Demo](https://github.com/user-attachments/assets/color-picker-demo.png)
+![Color Picker Demo](assets/color-picker-demo.png)
 
 _The beautiful color picker appears right where you click, with 12 preset colors and a custom color selector. Notice how "disable" is highlighted in teal, and the status bar shows "3 Reps" - perfect for knowing exactly what you're working with!_
 
@@ -113,7 +113,7 @@ _The beautiful color picker appears right where you click, with 12 preset colors
 - **Minimum 2 characters**: Very short selections (< 2 chars) won't trigger the counter
 - **Real-time updates**: All changes (color, case sensitivity) apply immediately
 
-![previous demo](duplicate_line_demo.gif)
+![previous demo](assets/duplicate_line_demo.gif)
 
 ## Development (Add this to your README)
 
