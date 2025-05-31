@@ -11,6 +11,7 @@ import { addNextOccurrence } from "./AddNextOccurrence";
 import { addAllOccurrences } from "./AddAllOccurrences";
 import { handleSelectionChange } from "./status-bar-occurences";
 import { commandsToCreate, DEFAULT_SETTINGS, Direction } from "./variables/variables";
+// import { createHighlightExtension } from "./highlight-extension";
 
 export default class DuplicateLine extends Plugin {
 	settings: dupliSettings;
@@ -24,7 +25,16 @@ export default class DuplicateLine extends Plugin {
 
 		this.addSettingTab(new DuplicateLineSettings(this.app, this));
 		this.createCommandsFromSettings();
-		//status bar occurences
+
+		// Initialize highlight colors
+		this.initializeHighlightColors();
+
+		// TODO: Register highlight extension for both desktop and mobile
+		// if (this.settings.highlightOccurrences) {
+		// 	this.registerEditorExtension(createHighlightExtension(this));
+		// }
+
+		//status bar occurences (desktop only)
 		if (Platform.isDesktopApp) {
 			this.registerDomEvent(document, 'selectionchange', () => handleSelectionChange(this));
 		}
@@ -53,9 +63,9 @@ export default class DuplicateLine extends Plugin {
 						this.duplicateLine(editor, commandConfig.direction);
 					}
 				} else if (condition === "addNextOcc") {
-					addNextOccurrence(editor);
+					addNextOccurrence(editor, this);
 				} else if (condition === "selAllOcc") {
-					addAllOccurrences(editor);
+					addAllOccurrences(editor, this);
 				}
 			},
 		});
@@ -70,6 +80,23 @@ export default class DuplicateLine extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	initializeHighlightColors(): void {
+		// Convert hex color to rgba with different opacities
+		const hexToRgba = (hex: string, alpha: number): string => {
+			const r = parseInt(hex.slice(1, 3), 16);
+			const g = parseInt(hex.slice(3, 5), 16);
+			const b = parseInt(hex.slice(5, 7), 16);
+			return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+		};
+
+		const color = this.settings.highlightColor;
+		// Update CSS custom properties
+		document.documentElement.style.setProperty('--highlight-color-strong', hexToRgba(color, 0.4));
+		document.documentElement.style.setProperty('--highlight-color-medium', hexToRgba(color, 0.2));
+		document.documentElement.style.setProperty('--highlight-border-strong', hexToRgba(color, 0.8));
+		document.documentElement.style.setProperty('--highlight-border-medium', hexToRgba(color, 0.5));
 	}
 
 	duplicateLine = (editor: Editor, direction: Direction): void => {

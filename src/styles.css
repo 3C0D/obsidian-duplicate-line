@@ -1,5 +1,35 @@
-.status-bar-occurences{
+.status-bar-occurences {
     color: #fff;
     font-size: 100%;
     /* font-weight: bold */
+}
+
+/* CSS custom properties for highlight colors */
+:root {
+    --highlight-color-strong: rgba(255, 255, 0, 0.4);
+    --highlight-color-medium: rgba(255, 255, 0, 0.2);
+    --highlight-border-strong: rgba(255, 255, 0, 0.8);
+    --highlight-border-medium: rgba(255, 255, 0, 0.5);
+}
+
+/* Style for multiple selections (Ctrl+Shift+L and Ctrl+D) */
+.is-flashing {
+    background-color: var(--highlight-color-strong) !important;
+    border-radius: 3px;
+    outline: 1px solid var(--highlight-border-strong) !important;
+}
+
+/* Dynamic highlights for occurrences */
+.duplicate-line-current-word,
+.duplicate-line-current-selection {
+    background-color: var(--highlight-color-strong);
+    border-radius: 3px;
+    outline: 1px solid var(--highlight-border-strong);
+}
+
+.duplicate-line-match-word,
+.duplicate-line-match-selection {
+    background-color: var(--highlight-color-medium);
+    border-radius: 3px;
+    outline: 1px solid var(--highlight-border-medium);
 }

@@ -26,6 +26,8 @@ export const DEFAULT_SETTINGS: dupliSettings = {
 	selAllOcc: true,
 	showOccurences: true,
 	matchCase: false,
+	highlightOccurrences: true,
+	highlightColor: "#ffff00",
 	color: "#C6AB85",
 	fontSize: 1.2
 };

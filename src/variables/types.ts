@@ -39,6 +39,8 @@ export interface dupliSettings {
 	selAllOcc: boolean;
 	showOccurences: boolean;
 	matchCase: boolean;
+	highlightOccurrences: boolean;
+	highlightColor: string;
 	color: string;
 	fontSize: number;
 }

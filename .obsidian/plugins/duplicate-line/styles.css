@@ -2,3 +2,25 @@
     color: #fff;
     font-size: 100%
 }
+
+/* Style for multiple selections (Ctrl+Shift+L and Ctrl+D) */
+.is-flashing {
+    background-color: rgba(255, 255, 0, 0.4) !important;
+    border-radius: 3px;
+    outline: 1px solid rgba(255, 255, 0, 0.8) !important;
+}
+
+/* Dynamic highlights for occurrences */
+.duplicate-line-current-word,
+.duplicate-line-current-selection {
+    background-color: rgba(255, 255, 0, 0.4);
+    border-radius: 3px;
+    outline: 1px solid rgba(255, 255, 0, 0.8);
+}
+
+.duplicate-line-match-word,
+.duplicate-line-match-selection {
+    background-color: rgba(255, 255, 0, 0.2);
+    border-radius: 3px;
+    outline: 1px solid rgba(255, 255, 0, 0.5);
+}

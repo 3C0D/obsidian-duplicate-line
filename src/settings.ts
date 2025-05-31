@@ -39,6 +39,34 @@ export class DuplicateLineSettings extends PluginSettingTab {
 						});
 				});
 
+			new Setting(containerEl)
+				.setName("Highlight all occurrences")
+				.setDesc("Automatically highlight all occurrences of the selected text or word under cursor")
+				.addToggle((toggle) => {
+					toggle
+						.setValue(this.plugin.settings.highlightOccurrences)
+						.onChange(async (value) => {
+							this.plugin.settings.highlightOccurrences = value;
+							await this.plugin.saveSettings();
+							// Reload plugin to apply extension changes
+							this.plugin.app.plugins.disablePlugin('duplicate-line');
+							this.plugin.app.plugins.enablePlugin('duplicate-line');
+						});
+				});
+
+			new Setting(containerEl)
+				.setName("Highlight color")
+				.setDesc("Choose the color for highlighting occurrences and multiple selections")
+				.addColorPicker((color) => {
+					color
+						.setValue(this.plugin.settings.highlightColor)
+						.onChange(async (value) => {
+							this.plugin.settings.highlightColor = value;
+							this.updateHighlightColors(value);
+							await this.plugin.saveSettings();
+						});
+				});
+
 
 
 			const setting = new Setting(containerEl)
@@ -112,5 +140,21 @@ export class DuplicateLineSettings extends PluginSettingTab {
 
 
 
+	}
+
+	updateHighlightColors(color: string): void {
+		// Convert hex color to rgba with different opacities
+		const hexToRgba = (hex: string, alpha: number): string => {
+			const r = parseInt(hex.slice(1, 3), 16);
+			const g = parseInt(hex.slice(3, 5), 16);
+			const b = parseInt(hex.slice(5, 7), 16);
+			return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+		};
+
+		// Update CSS custom properties
+		document.documentElement.style.setProperty('--highlight-color-strong', hexToRgba(color, 0.4));
+		document.documentElement.style.setProperty('--highlight-color-medium', hexToRgba(color, 0.2));
+		document.documentElement.style.setProperty('--highlight-border-strong', hexToRgba(color, 0.8));
+		document.documentElement.style.setProperty('--highlight-border-medium', hexToRgba(color, 0.5));
 	}
 }
