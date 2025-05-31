@@ -15,8 +15,8 @@ export class DuplicateLineSettings extends PluginSettingTab {
 
 		if (Platform.isDesktopApp) {
 			new Setting(containerEl)
-				.setName("Show selection occurences in status bar")
-				.setDesc("select at least 3 characters")
+				.setName("Show selection occurrences in status bar")
+				.setDesc("select at least 2 characters")
 				.addToggle((toggle) => {
 					toggle
 						.setValue(this.plugin.settings.showOccurences)
@@ -26,6 +26,20 @@ export class DuplicateLineSettings extends PluginSettingTab {
 						});
 
 				});
+
+			new Setting(containerEl)
+				.setName("Match case for occurrences")
+				.setDesc("Enable case-sensitive search when counting occurrences")
+				.addToggle((toggle) => {
+					toggle
+						.setValue(this.plugin.settings.matchCase)
+						.onChange(async (value) => {
+							this.plugin.settings.matchCase = value;
+							await this.plugin.saveSettings();
+						});
+				});
+
+
 
 			const setting = new Setting(containerEl)
 				.setName("Set color & size")

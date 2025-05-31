@@ -28,7 +28,8 @@ export function reset(plugin: DuplicateLine) {
 export async function addStatusBarReps(plugin: DuplicateLine) {
     plugin.statusBarItemEl = await this.addStatusBarItem() as HTMLElement
     const { statusBarItemEl } = plugin
-    statusBarItemEl.setText(`${plugin.nb} Reps`);
+    const caseIndicator = plugin.settings.matchCase ? ' (Aa)' : '';
+    statusBarItemEl.setText(`${plugin.nb} Reps${caseIndicator}`);
     statusBarItemEl.style.color = plugin.settings.color;
     statusBarItemEl.style.fontSize = `${plugin.settings.fontSize}em`;
 }
@@ -50,13 +51,15 @@ export function getOccurrences(plugin: DuplicateLine): number {
     const { editor, text } = getEditorContent(plugin);
     if (!editor) return 0
     const selection = editor.getSelection().trim();
-    if (!selection) return 0;
+    if (!selection || selection.length < 2) return 0;
 
     if (!plugin.selectionRegex) {
         compileRegex(plugin, selection);
     }
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (plugin.selectionRegex!.source !== selection) {
+    if (plugin.selectionRegex!.source !== escapeRegExp(selection) ||
+        (plugin.settings.matchCase && plugin.selectionRegex!.flags.includes('i')) ||
+        (!plugin.settings.matchCase && !plugin.selectionRegex!.flags.includes('i'))) {
         compileRegex(plugin, selection);
     }
 
@@ -77,3 +80,5 @@ function compileRegex(plugin: DuplicateLine, selection: string) {
         console.warn(error);
     }
 }
+
+
