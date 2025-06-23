@@ -25,10 +25,10 @@
  */
 
 import { SearchCursor } from "@codemirror/search";
-import { Extension } from "@codemirror/state";
-import { Decoration, DecorationSet, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
+import type { Extension } from "@codemirror/state";
+import { Decoration, type DecorationSet, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
 import { debounce } from "obsidian";
-import DuplicateLine from "./main";
+import DuplicateLine from "./main.ts";
 
 export function createHighlightExtension(plugin: DuplicateLine): Extension {
     return ViewPlugin.fromClass(
@@ -50,7 +50,7 @@ export function createHighlightExtension(plugin: DuplicateLine): Extension {
                 this.decorations = this.getDeco(view);
             }
 
-            update(update: ViewUpdate) {
+            update(update: ViewUpdate) : void {
                 if (update.selectionSet || update.docChanged || update.viewportChanged) {
                     // Clear decorations immediately to prevent flickering
                     setTimeout(() => {
@@ -94,7 +94,7 @@ export function createHighlightExtension(plugin: DuplicateLine): Extension {
                 const deco: any[] = [];
 
                 for (const part of view.visibleRanges) {
-                    const caseTransform = this.plugin.settings.matchCase ? (s: string) => s : (s: string) => s.toLowerCase();
+                    const caseTransform = this.plugin.settings.matchCase ? (s: string): string => s : (s: string): string => s.toLowerCase();
                     const cursor = new SearchCursor(state.doc, query, part.from, part.to, caseTransform);
 
                     while (!cursor.next().done) {

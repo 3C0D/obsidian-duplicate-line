@@ -1,16 +1,16 @@
-import { Editor, EditorChange, EditorRange, EditorTransaction, Platform, Plugin } from "obsidian";
-import { DuplicateLineSettings } from "./settings";
-import { CommandConfig, dupliSettings } from "./variables/types";
+import { Editor, type EditorChange, type EditorRange, type EditorTransaction, Platform, Plugin } from "obsidian";
+import { DuplicateLineSettings } from "./settings.ts";
+import type { CommandConfig, dupliSettings } from "./variables/types.ts";
 import {
 	areObjectsEqual,
 	isNoSelection,
 	selectionToLine,
 	selectionToRange,
-} from "./utils";
-import { addNextOccurrence } from "./AddNextOccurrence";
-import { addAllOccurrences } from "./AddAllOccurrences";
-import { handleSelectionChange } from "./status-bar-occurences";
-import { commandsToCreate, DEFAULT_SETTINGS, Direction } from "./variables/variables";
+} from "./utils.ts";
+import { addNextOccurrence } from "./AddNextOccurrence.ts";
+import { addAllOccurrences } from "./AddAllOccurrences.ts";
+import { handleSelectionChange } from "./status-bar-occurences.ts";
+import { commandsToCreate, DEFAULT_SETTINGS, Direction } from "./variables/variables.ts";
 // import { createHighlightExtension } from "./highlight-extension";
 
 export default class DuplicateLine extends Plugin {
@@ -18,9 +18,9 @@ export default class DuplicateLine extends Plugin {
 	newDirection: Direction | null;
 	statusBarItemEl: HTMLElement | null;
 	selectionRegex: RegExp | null;
-	nb: number
+	nb: number;
 
-	async onload() {
+	async onload(): Promise<void>	 {
 		await this.loadSettings();
 
 		this.addSettingTab(new DuplicateLineSettings(this.app, this));
@@ -40,17 +40,17 @@ export default class DuplicateLine extends Plugin {
 		}
 	}
 
-	createCommandsFromSettings() {
+	createCommandsFromSettings(): void {
 		commandsToCreate.forEach((commandConfig) => {
 			const condition = commandConfig.condition;
 			const conditionValue =
 				this.settings[condition as keyof dupliSettings];
 			if (conditionValue) {
-				this.addCommandToEditor(commandConfig, condition)
+				this.addCommandToEditor(commandConfig, condition);
 			}
 		});
 	}
-	addCommandToEditor(commandConfig: CommandConfig, condition: string) {
+	addCommandToEditor(commandConfig: CommandConfig, condition: string): void {
 		this.addCommand({
 			id: commandConfig.id,
 			name: commandConfig.name,
@@ -71,14 +71,14 @@ export default class DuplicateLine extends Plugin {
 		});
 	}
 
-	async loadSettings() {
+	async loadSettings(): Promise<void> {
 		this.settings = {
 			...DEFAULT_SETTINGS,
 			...(await this.loadData()),
 		};
 	}
 
-	async saveSettings() {
+	async saveSettings(): Promise<void> {
 		await this.saveData(this.settings);
 	}
 
@@ -334,17 +334,17 @@ export default class DuplicateLine extends Plugin {
 		editor: Editor,
 		direction: Direction,
 	): void => {
-		const selections = editor.listSelections()
-		const changes: Array<EditorChange> = []
+		const selections = editor.listSelections();
+		const changes: Array<EditorChange> = [];
 		for (const selection of selections) {
-			if (isNoSelection(selection)) continue
-			const range = selectionToRange(selection, true)
-			let additionChange: EditorChange
-			let deletionChange: EditorChange
+			if (isNoSelection(selection)) continue;
+			const range = selectionToRange(selection, true);
+			let additionChange: EditorChange;
+			let deletionChange: EditorChange;
 			switch (direction) {
 				case Direction.Left: {
-					const isStart = (range.from.line === 0 && range.from.ch === 0)
-					const isLineStart = range.from.ch === 0
+					const isStart = (range.from.line === 0 && range.from.ch === 0);
+					const isLineStart = range.from.ch === 0;
 					// if ()
 					deletionChange = {
 						from: isStart ? {
@@ -359,18 +359,18 @@ export default class DuplicateLine extends Plugin {
 						},
 						to: range.from,
 						text: '',
-					}
+					};
 
 					additionChange = {
 						from: range.to,
 						to: range.to,
-						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+						 
 						text: editor.getRange(deletionChange.from, deletionChange.to!),
-					}
-					break
+					};
+					break;
 				}
 				case Direction.Right: {
-					const isExtrem = (range.to.line === editor.lastLine() && range.to.ch === editor.getLine(range.to.line).length)
+					const isExtrem = (range.to.line === editor.lastLine() && range.to.ch === editor.getLine(range.to.line).length);
 
 					deletionChange = {
 						from: range.to,
@@ -382,30 +382,30 @@ export default class DuplicateLine extends Plugin {
 							ch: range.to.ch + 1,
 						},
 						text: '',
-					}
+					};
 
 					additionChange = {
 						from: range.from,
 						to: range.from,
-						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+						 
 						text: editor.getRange(deletionChange.from, deletionChange.to!),
-					}
-					break
+					};
+					break;
 				}
 			}
 			//@ts-ignore
-			changes.push(deletionChange, additionChange)
+			changes.push(deletionChange, additionChange);
 		}
 
 		if (changes.length > 0) {
 			const transaction: EditorTransaction = {
 				changes: changes,
-			}
+			};
 
-			const origin = 'DirectionalMove_' + String(direction)
-			editor.transaction(transaction, origin)
+			const origin = 'DirectionalMove_' + String(direction);
+			editor.transaction(transaction, origin);
 		}
-	}
+	};
 }
 
 

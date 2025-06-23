@@ -1,33 +1,33 @@
-import { debounce, Menu } from "obsidian";
-import DuplicateLine from "./main";
-import { getEditor, getContent } from "./utils";
+import { debounce, Editor, Menu } from "obsidian";
+import DuplicateLine from "./main.ts";
+import { getEditor, getContent } from "./utils.ts";
 import { escapeRegExp } from "lodash";
 
-export const handleSelectionChange = (plugin: DuplicateLine) => {
-    reset(plugin)
+export const handleSelectionChange = (plugin: DuplicateLine): void => {
+    reset(plugin);
     const debounced = debounce(async () => {
         plugin.nb = getOccurrences(plugin);
         if (plugin.settings.showOccurences && plugin.nb >= 1) {
             if (!plugin.statusBarItemEl) {
-                await addStatusBarReps.bind(plugin)(plugin)
+                await addStatusBarReps.bind(plugin)(plugin);
             }
         } else {
-            reset(plugin)
+            reset(plugin);
         }
     }, 300, true);
-    debounced()
+    debounced();
+};
+
+export function reset(plugin: DuplicateLine): void {
+    plugin.selectionRegex = null;
+    plugin.nb = 0;
+    plugin.statusBarItemEl?.detach();
+    plugin.statusBarItemEl = null;
 }
 
-export function reset(plugin: DuplicateLine) {
-    plugin.selectionRegex = null
-    plugin.nb = 0
-    plugin.statusBarItemEl?.detach()
-    plugin.statusBarItemEl = null
-}
-
-export async function addStatusBarReps(plugin: DuplicateLine) {
-    plugin.statusBarItemEl = await this.addStatusBarItem() as HTMLElement
-    const { statusBarItemEl } = plugin
+export async function addStatusBarReps(plugin: DuplicateLine): Promise<void> {
+    plugin.statusBarItemEl = await this.addStatusBarItem() as HTMLElement;
+    const { statusBarItemEl } = plugin;
     const caseIndicator = plugin.settings.matchCase ? ' (Aa)' : '';
     statusBarItemEl.setText(`${plugin.nb} Reps${caseIndicator}`);
     statusBarItemEl.style.color = plugin.settings.color;
@@ -40,9 +40,8 @@ export async function addStatusBarReps(plugin: DuplicateLine) {
     });
 }
 
-
-function getEditorContent(plugin: DuplicateLine) {
-    const editor = getEditor(plugin);
+function getEditorContent(plugin: DuplicateLine): { editor: Editor | null; text: string } {
+    const editor = getEditor(plugin) ?? null;
     let text = "";
     if (editor) {
         text = getContent(editor);
@@ -50,26 +49,26 @@ function getEditorContent(plugin: DuplicateLine) {
     return {
         editor,
         text
-    }
+    };
 }
 
 export function getOccurrences(plugin: DuplicateLine): number {
     const { editor, text } = getEditorContent(plugin);
-    if (!editor) return 0
+    if (!editor) return 0;
     const selection = editor.getSelection().trim();
     if (!selection || selection.length < 2) return 0;
 
     if (!plugin.selectionRegex) {
         compileRegex(plugin, selection);
     }
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+     
     if (plugin.selectionRegex!.source !== escapeRegExp(selection) ||
         (plugin.settings.matchCase && plugin.selectionRegex!.flags.includes('i')) ||
         (!plugin.settings.matchCase && !plugin.selectionRegex!.flags.includes('i'))) {
         compileRegex(plugin, selection);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+     
     const matches = [...text.matchAll(plugin.selectionRegex!)];
 
 
@@ -77,7 +76,7 @@ export function getOccurrences(plugin: DuplicateLine): number {
     return matches.length;
 }
 
-function compileRegex(plugin: DuplicateLine, selection: string) {
+function compileRegex(plugin: DuplicateLine, selection: string): void {
     let modifiers = 'g';
     if (!plugin.settings.matchCase) {
         modifiers += 'i';
@@ -89,7 +88,7 @@ function compileRegex(plugin: DuplicateLine, selection: string) {
     }
 }
 
-function showStatusBarContextMenu(plugin: DuplicateLine, event: MouseEvent) {
+function showStatusBarContextMenu(plugin: DuplicateLine, event: MouseEvent): void {
     const menu = new Menu();
 
     // Toggle case sensitivity option
@@ -131,7 +130,7 @@ function showStatusBarContextMenu(plugin: DuplicateLine, event: MouseEvent) {
     menu.showAtMouseEvent(event);
 }
 
-function showColorPicker(plugin: DuplicateLine, targetElement: HTMLElement, clickEvent?: MouseEvent) {
+function showColorPicker(plugin: DuplicateLine, targetElement: HTMLElement, clickEvent?: MouseEvent): void {
     // Create color picker container
     const colorPicker = document.createElement('div');
     colorPicker.className = 'duplicate-line-color-picker';
@@ -285,7 +284,7 @@ function showColorPicker(plugin: DuplicateLine, targetElement: HTMLElement, clic
     colorPicker.style.top = `${top}px`;
 
     // Close on click outside
-    const closeHandler = (e: MouseEvent) => {
+    const closeHandler = (e: MouseEvent): void => {
         if (!colorPicker.contains(e.target as Node)) {
             colorPicker.remove();
             document.removeEventListener('click', closeHandler);
@@ -298,7 +297,7 @@ function showColorPicker(plugin: DuplicateLine, targetElement: HTMLElement, clic
     }, 100);
 
     // Close on Escape key
-    const keyHandler = (e: KeyboardEvent) => {
+    const keyHandler = (e: KeyboardEvent): void => {
         if (e.key === 'Escape') {
             colorPicker.remove();
             document.removeEventListener('click', closeHandler);

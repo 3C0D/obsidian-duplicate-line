@@ -1,9 +1,14 @@
-feat: add interactive status bar with occurrence counter and color picker
+# Release Notes
 
-BREAKING CHANGE: Enhanced selection workflow with new status bar features
+This release was automatically generated from the latest tag.
 
-- Interactive occurrence counter in status bar
-- Custom color picker with presets
-- Quick access menu for settings
-- Case sensitivity toggle
-- Improved user experience
+## Installation
+
+1. Download the latest release files (`main.js`, `manifest.json`, and optionally `styles.css`)
+2. Create a folder for this plugin in your Obsidian vault's `.obsidian/plugins/` directory
+3. Place the downloaded files in that folder
+4. Enable the plugin in Obsidian's Community Plugins settings
+
+## Changes
+
+See the automatically generated release notes below for detailed changes in this version.

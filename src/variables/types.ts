@@ -1,10 +1,4 @@
-
-
-// export * from "obsidian";
-
-import { Direction } from "./variables";
-
-
+import { Direction } from "./variables.ts";
 
 export interface CommandConfig {
 	id: string;
@@ -14,8 +8,6 @@ export interface CommandConfig {
 	condition: string;
 	desc: string
 }
-
-
 
 declare module "obsidian" {
 	interface Editor {

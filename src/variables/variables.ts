@@ -1,4 +1,4 @@
-import { CommandConfig, dupliSettings } from "./types";
+import { type CommandConfig, type dupliSettings } from "./types.ts";
 
 
 export enum Direction {

@@ -1,9 +1,9 @@
 import { Editor } from "obsidian";
-import { getContent, getSelectionContent, rangeToPositions, selectionToRange } from "./utils";
+import { getContent, getSelectionContent, rangeToPositions, selectionToRange } from "./utils.ts";
 import { escapeRegExp } from "lodash";
-import DuplicateLine from "./main";
+import DuplicateLine from "./main.ts";
 
-export const addNextOccurrence = (editor: Editor, plugin?: DuplicateLine) => {
+export const addNextOccurrence = (editor: Editor, plugin?: DuplicateLine): void => {
 	const selections = editor.listSelections();
 	const { word, wordRange, isWordSelected } = getSelectionContent(
 		editor,

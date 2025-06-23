@@ -1,7 +1,7 @@
 import { App, Platform, PluginSettingTab, Setting } from "obsidian";
-import { CommandConfig, dupliSettings } from "./variables/types";
-import DuplicateLine from "./main";
-import { commandsToCreate } from "./variables/variables";
+import type { CommandConfig, dupliSettings } from "./variables/types.ts";
+import DuplicateLine from "./main.ts";
+import { commandsToCreate } from "./variables/variables.ts";
 
 export class DuplicateLineSettings extends PluginSettingTab {
 	constructor(app: App, public plugin: DuplicateLine) {
@@ -75,11 +75,11 @@ export class DuplicateLineSettings extends PluginSettingTab {
 					.setValue(this.plugin.settings.color)
 					.onChange(async (value) => {
 						this.plugin.settings.color = value;
-						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+						 
 						this.plugin.statusBarItemEl!.style.color = value;
 						await this.plugin.saveSettings();
 					})
-				)
+				);
 			setting
 				.addSlider((slider) => {
 					slider
@@ -88,11 +88,11 @@ export class DuplicateLineSettings extends PluginSettingTab {
 						.setDynamicTooltip()
 						.onChange(async (value) => {
 							this.plugin.settings.fontSize = value;
-							// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+							 
 							this.plugin.statusBarItemEl!.style.fontSize = `${value}em`;
 							await this.plugin.saveSettings();
 						});
-				})
+				});
 		}
 
 		new Setting(containerEl)
@@ -111,7 +111,7 @@ export class DuplicateLineSettings extends PluginSettingTab {
 			const setting = new Setting(containerEl).setName(
 				commandConfig.name
 			);
-			setting.setDesc(commandConfig.desc as keyof dupliSettings)
+			setting.setDesc(commandConfig.desc as keyof dupliSettings);
 			setting.addToggle((toggle) => {
 				toggle
 					.setValue(
@@ -128,10 +128,10 @@ export class DuplicateLineSettings extends PluginSettingTab {
 							commandConfig.condition as keyof dupliSettings
 						]) {
 							const condition = commandConfig.condition;
-							this.plugin.addCommandToEditor(commandConfig, condition)
+							this.plugin.addCommandToEditor(commandConfig, condition);
 						}
 						else {
-							this.app.commands.removeCommand(`duplicate-line:${commandConfig.id}`)
+							this.app.commands.removeCommand(`duplicate-line:${commandConfig.id}`);
 						}
 						await this.plugin.saveSettings();
 					});

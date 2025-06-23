@@ -1,13 +1,13 @@
 import {
 	Editor,
-	EditorPosition,
-	EditorRange,
-	EditorSelection,
+	type EditorPosition,
+	type EditorRange,
+	type EditorSelection,
 	MarkdownView,
 } from "obsidian";
 import { sortBy } from "lodash";
-import DuplicateLine from "./main";
-import { Direction } from "./variables/variables";
+import DuplicateLine from "./main.ts";
+import { Direction } from "./variables/variables.ts";
 
 export function selectionToLine(
 	editor: Editor,
@@ -74,11 +74,11 @@ interface Position {
 	ch: number;
 }
 
-export function areObjectsEqual(obj1: Position, obj2: Position) {
+export function areObjectsEqual(obj1: Position, obj2: Position): boolean {
 	return obj1.line === obj2.line && obj1.ch === obj2.ch;
 }
 
-export function isNoSelection(selection: EditorSelection) {
+export function isNoSelection(selection: EditorSelection): boolean {
 	const { anchor, head } = selection;
 	return anchor.ch === head.ch && anchor.line === head.line;
 }
@@ -106,24 +106,24 @@ export function rangeToPositions(
 	return [startPos, endPos];
 }
 
-export const getContent = (ed: Editor) => {
+export const getContent = (ed: Editor): string => {
 	return ed.getValue();
 };
 
 export const getSelectionContent = (
 	ed: Editor,
 	selections: EditorSelection[]
-) => {
+): { wordRange: EditorRange | null; word: string; isWordSelected: boolean } => {
 
 	// EditorSelection anchor: EditorPosition; head: EditorPosition
 	const lastSelection: EditorSelection = selections[selections.length - 1];
-	const selection = ed.getSelection()
+	const selection = ed.getSelection();
 	let wordRange;
 
 	if (selection) {
-		wordRange = selectionToRange(lastSelection, true)
+		wordRange = selectionToRange(lastSelection, true);
 	} else {
-		wordRange = ed.wordAt(lastSelection.head)
+		wordRange = ed.wordAt(lastSelection.head);
 	}
 
 	// wordRange: EditorRange from: EditorPosition to: EditorPosition;
@@ -141,9 +141,9 @@ export const getSelectionContent = (
 };
 
 
-export function getEditor(plugin: DuplicateLine) {
+export function getEditor(plugin: DuplicateLine): Editor | undefined {
 	const activeView = plugin.app.workspace.getActiveViewOfType(MarkdownView);
-	if (!activeView) return
-	const editor = activeView.editor
-	return editor
+	if (!activeView) return;
+	const editor = activeView.editor;
+	return editor;
 }

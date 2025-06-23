@@ -1,8 +1,8 @@
 import { Editor } from "obsidian";
-import { getContent, getSelectionContent, selectionToRange } from "./utils";
-import DuplicateLine from "./main";
+import { getContent, getSelectionContent, selectionToRange } from "./utils.ts";
+import DuplicateLine from "./main.ts";
 
-export const addAllOccurrences = (editor: Editor, plugin?: DuplicateLine) => {
+export const addAllOccurrences = (editor: Editor, plugin?: DuplicateLine): void => {
 	let selections = editor.listSelections();
 	const { word, wordRange } = getSelectionContent(editor, selections);
 	selections = [];
@@ -16,7 +16,6 @@ export const addAllOccurrences = (editor: Editor, plugin?: DuplicateLine) => {
 		const searchDoc = (!plugin || !plugin.settings.matchCase) ? doc.toLowerCase() : doc;
 
 		let nextOccurrenceIndex = searchDoc.indexOf(searchWord);
-		let foundCount = 0;
 
 		while (nextOccurrenceIndex !== -1) {
 			const nextOccurrenceStart = editor.offsetToPos(nextOccurrenceIndex);
@@ -26,8 +25,7 @@ export const addAllOccurrences = (editor: Editor, plugin?: DuplicateLine) => {
 				anchor: nextOccurrenceStart,
 				head: nextOccurrenceEnd,
 			});
-
-			foundCount++;
+			
 			nextOccurrenceIndex = searchDoc.indexOf(searchWord, nextOccurrenceIndex + word.length);
 		}
 
