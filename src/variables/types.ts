@@ -1,4 +1,4 @@
-import { Direction } from "./variables.ts";
+import { Direction } from './variables.ts';
 
 export interface CommandConfig {
 	id: string;
@@ -6,10 +6,10 @@ export interface CommandConfig {
 	icon: string;
 	direction: Direction | null;
 	condition: string;
-	desc: string
+	desc: string;
 }
 
-declare module "obsidian" {
+declare module 'obsidian' {
 	interface Editor {
 		addHighlights(ranges: EditorRange[], cls: string): void;
 		removeHighlights(cls: string): void;

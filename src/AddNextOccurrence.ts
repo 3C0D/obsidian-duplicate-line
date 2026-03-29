@@ -1,22 +1,26 @@
-import { Editor } from "obsidian";
-import { getContent, getSelectionContent, rangeToPositions, selectionToRange } from "./utils.ts";
-import { escapeRegExp } from "lodash";
-import DuplicateLine from "./main.ts";
+import { Editor } from 'obsidian';
+import {
+	getContent,
+	getSelectionContent,
+	rangeToPositions,
+	selectionToRange
+} from './utils.ts';
+import { escapeRegExp } from 'lodash';
+import DuplicateLine from './main.ts';
 
 export const addNextOccurrence = (editor: Editor, plugin?: DuplicateLine): void => {
 	const selections = editor.listSelections();
-	const { word, wordRange, isWordSelected } = getSelectionContent(
-		editor,
-		selections
-	);
+	const { word, wordRange, isWordSelected } = getSelectionContent(editor, selections);
 	if (wordRange !== null && word) {
 		// Get plugin instance to access settings
 		if (!plugin) {
-			plugin = (window as any).app?.plugins?.plugins?.['duplicate-line'] as DuplicateLine;
+			plugin = (window as any).app?.plugins?.plugins?.[
+				'duplicate-line'
+			] as DuplicateLine;
 		}
 
 		const doc = getContent(editor);
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 		const [_, endPos] = rangeToPositions(wordRange);
 		const pos = editor.posToOffset(endPos);
 
@@ -45,30 +49,26 @@ export const addNextOccurrence = (editor: Editor, plugin?: DuplicateLine): void 
 				nextOccurrenceIndex + match[0].length
 			);
 
-			editor.removeHighlights("is-flashing");
+			editor.removeHighlights('is-flashing');
 
 			if (!isWordSelected)
 				selections[selections.length - 1] = {
 					anchor: wordRange.from,
-					head: wordRange.to,
+					head: wordRange.to
 				};
 
 			if (isWordSelected)
 				selections.push({
 					anchor: nextOccurrenceStart,
-					head: nextOccurrenceEnd,
+					head: nextOccurrenceEnd
 				});
 
 			editor.setSelections(selections);
 
 			for (const sel of selections) {
 				const range = selectionToRange(sel);
-				editor.addHighlights([range], "is-flashing");
+				editor.addHighlights([range], 'is-flashing');
 			}
 		}
 	}
 };
-
-
-
-

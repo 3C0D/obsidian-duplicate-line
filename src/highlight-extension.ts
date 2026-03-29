@@ -24,109 +24,124 @@
  * not replace it. The status bar counter and color picker would still work.
  */
 
-import { SearchCursor } from "@codemirror/search";
-import type { Extension } from "@codemirror/state";
-import { Decoration, type DecorationSet, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
-import { debounce } from "obsidian";
-import DuplicateLine from "./main.ts";
+import { SearchCursor } from '@codemirror/search';
+import type { Extension } from '@codemirror/state';
+import {
+	Decoration,
+	type DecorationSet,
+	EditorView,
+	ViewPlugin,
+	ViewUpdate
+} from '@codemirror/view';
+import { debounce } from 'obsidian';
+import DuplicateLine from './main.ts';
 
 export function createHighlightExtension(plugin: DuplicateLine): Extension {
-    return ViewPlugin.fromClass(
-        class {
-            decorations: DecorationSet;
-            plugin: DuplicateLine;
-            delayedGetDeco: any;
+	return ViewPlugin.fromClass(
+		class {
+			decorations: DecorationSet;
+			plugin: DuplicateLine;
+			delayedGetDeco: any;
 
-            constructor(view: EditorView) {
-                this.plugin = plugin;
-                this.delayedGetDeco = debounce(
-                    (view: EditorView) => {
-                        this.decorations = this.getDeco(view);
-                        view.update([]);
-                    },
-                    300,
-                    true
-                );
-                this.decorations = this.getDeco(view);
-            }
+			constructor(view: EditorView) {
+				this.plugin = plugin;
+				this.delayedGetDeco = debounce(
+					(view: EditorView) => {
+						this.decorations = this.getDeco(view);
+						view.update([]);
+					},
+					300,
+					true
+				);
+				this.decorations = this.getDeco(view);
+			}
 
-            update(update: ViewUpdate) : void {
-                if (update.selectionSet || update.docChanged || update.viewportChanged) {
-                    // Clear decorations immediately to prevent flickering
-                    setTimeout(() => {
-                        this.decorations = Decoration.none;
-                        update.view.update([]);
-                    }, 50);
+			update(update: ViewUpdate): void {
+				if (update.selectionSet || update.docChanged || update.viewportChanged) {
+					// Clear decorations immediately to prevent flickering
+					setTimeout(() => {
+						this.decorations = Decoration.none;
+						update.view.update([]);
+					}, 50);
 
-                    this.delayedGetDeco(update.view);
-                }
-            }
+					this.delayedGetDeco(update.view);
+				}
+			}
 
-            getDeco(view: EditorView): DecorationSet {
-                if (!this.plugin.settings.highlightOccurrences) return Decoration.none;
+			getDeco(view: EditorView): DecorationSet {
+				if (!this.plugin.settings.highlightOccurrences) return Decoration.none;
 
-                const { state } = view;
-                const sel = state.selection;
+				const { state } = view;
+				const sel = state.selection;
 
-                if (sel.ranges.length > 1) return Decoration.none;
+				if (sel.ranges.length > 1) return Decoration.none;
 
-                const range = sel.main;
-                let query: string;
-                let matchType: string;
+				const range = sel.main;
+				let query: string;
+				let matchType: string;
 
-                if (range.empty) {
-                    // No selection - highlight word under cursor
-                    matchType = "word";
-                    const word = state.wordAt(range.head);
-                    if (!word) return Decoration.none;
-                    query = state.sliceDoc(word.from, word.to);
-                } else {
-                    // Text selected - highlight all occurrences
-                    matchType = "selection";
-                    const len = range.to - range.from;
-                    if (len < 2 || len > 200) return Decoration.none;
-                    query = state.sliceDoc(range.from, range.to).trim();
-                    if (!query) return Decoration.none;
-                }
+				if (range.empty) {
+					// No selection - highlight word under cursor
+					matchType = 'word';
+					const word = state.wordAt(range.head);
+					if (!word) return Decoration.none;
+					query = state.sliceDoc(word.from, word.to);
+				} else {
+					// Text selected - highlight all occurrences
+					matchType = 'selection';
+					const len = range.to - range.from;
+					if (len < 2 || len > 200) return Decoration.none;
+					query = state.sliceDoc(range.from, range.to).trim();
+					if (!query) return Decoration.none;
+				}
 
-                if (query.length < 2) return Decoration.none;
+				if (query.length < 2) return Decoration.none;
 
-                const deco: any[] = [];
+				const deco: any[] = [];
 
-                for (const part of view.visibleRanges) {
-                    const caseTransform = this.plugin.settings.matchCase ? (s: string): string => s : (s: string): string => s.toLowerCase();
-                    const cursor = new SearchCursor(state.doc, query, part.from, part.to, caseTransform);
+				for (const part of view.visibleRanges) {
+					const caseTransform = this.plugin.settings.matchCase
+						? (s: string): string => s
+						: (s: string): string => s.toLowerCase();
+					const cursor = new SearchCursor(
+						state.doc,
+						query,
+						part.from,
+						part.to,
+						caseTransform
+					);
 
-                    while (!cursor.next().done) {
-                        const { from, to } = cursor.value;
-                        const string = state.sliceDoc(from, to);
+					while (!cursor.next().done) {
+						const { from, to } = cursor.value;
+						const string = state.sliceDoc(from, to);
 
-                        // Determine if this is the current selection or a match
-                        const isCurrent = from >= range.from && to <= range.to && !range.empty;
-                        const className = isCurrent
-                            ? `duplicate-line-current-${matchType}`
-                            : `duplicate-line-match-${matchType}`;
+						// Determine if this is the current selection or a match
+						const isCurrent =
+							from >= range.from && to <= range.to && !range.empty;
+						const className = isCurrent
+							? `duplicate-line-current-${matchType}`
+							: `duplicate-line-match-${matchType}`;
 
-                        const decoration = Decoration.mark({
-                            class: className,
-                            attributes: { "data-contents": string },
-                        });
+						const decoration = Decoration.mark({
+							class: className,
+							attributes: { 'data-contents': string }
+						});
 
-                        deco.push(decoration.range(from, to));
+						deco.push(decoration.range(from, to));
 
-                        if (deco.length > 100) return Decoration.none;
-                    }
-                }
+						if (deco.length > 100) return Decoration.none;
+					}
+				}
 
-                // Only show highlights if we have at least 2 matches (or 1 if text is selected)
-                const minMatches = range.empty ? 2 : 1;
-                if (deco.length < minMatches) return Decoration.none;
+				// Only show highlights if we have at least 2 matches (or 1 if text is selected)
+				const minMatches = range.empty ? 2 : 1;
+				if (deco.length < minMatches) return Decoration.none;
 
-                return Decoration.set(deco);
-            }
-        },
-        {
-            decorations: v => v.decorations,
-        }
-    );
+				return Decoration.set(deco);
+			}
+		},
+		{
+			decorations: (v) => v.decorations
+		}
+	);
 }

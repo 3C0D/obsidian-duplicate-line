@@ -3,11 +3,11 @@ import {
 	type EditorPosition,
 	type EditorRange,
 	type EditorSelection,
-	MarkdownView,
-} from "obsidian";
-import { sortBy } from "lodash";
-import DuplicateLine from "./main.ts";
-import { Direction } from "./variables/variables.ts";
+	MarkdownView
+} from 'obsidian';
+import { sortBy } from 'lodash';
+import DuplicateLine from './main.ts';
+import { Direction } from './variables/variables.ts';
 
 export function selectionToLine(
 	editor: Editor,
@@ -21,7 +21,7 @@ export function selectionToLine(
 	if (direction === Direction.Up || direction === Direction.Down) {
 		return {
 			from: { line: range.from.line, ch: 0 },
-			to: { line: range.to.line, ch: toLength },
+			to: { line: range.to.line, ch: toLength }
 		};
 	} else if (
 		direction === Direction.SelDown ||
@@ -30,9 +30,9 @@ export function selectionToLine(
 	) {
 		return isEmptySelection
 			? {
-				from: { line: range.to.line, ch: 0 },
-				to: { line: range.to.line, ch: toLength },
-			}
+					from: { line: range.to.line, ch: 0 },
+					to: { line: range.to.line, ch: toLength }
+				}
 			: range;
 	} else {
 		// selection right/left
@@ -44,10 +44,7 @@ export function selectionToLine(
 				const currentLine = editor.getLine(line);
 				// find previous word
 				let startOfWord = ch - 1;
-				while (
-					startOfWord >= 0 &&
-					/\S/.test(currentLine[startOfWord])
-				) {
+				while (startOfWord >= 0 && /\S/.test(currentLine[startOfWord])) {
 					startOfWord--;
 				}
 				startOfWord++;
@@ -55,19 +52,17 @@ export function selectionToLine(
 				const contentLength = currentLine.slice(startOfWord, ch).length;
 				range = {
 					from: { line: line, ch: ch - contentLength },
-					to: { line: line, ch: ch },
+					to: { line: line, ch: ch }
 				};
 				return range;
 			}
 		}
 		return {
 			from: range.from,
-			to: range.to,
+			to: range.to
 		};
 	}
 }
-
-
 
 interface Position {
 	line: number;
@@ -90,17 +85,15 @@ export function selectionToRange(
 	const positions = [selection.anchor, selection.head];
 	let sorted = positions;
 	if (sort) {
-		sorted = sortBy(positions, ["line", "ch"]);
+		sorted = sortBy(positions, ['line', 'ch']);
 	}
 	return {
 		from: sorted[0],
-		to: sorted[1],
+		to: sorted[1]
 	};
 }
 
-export function rangeToPositions(
-	range: EditorRange
-): [EditorPosition, EditorPosition] {
+export function rangeToPositions(range: EditorRange): [EditorPosition, EditorPosition] {
 	const startPos: EditorPosition = range.from;
 	const endPos: EditorPosition = range.to;
 	return [startPos, endPos];
@@ -114,7 +107,6 @@ export const getSelectionContent = (
 	ed: Editor,
 	selections: EditorSelection[]
 ): { wordRange: EditorRange | null; word: string; isWordSelected: boolean } => {
-
 	// EditorSelection anchor: EditorPosition; head: EditorPosition
 	const lastSelection: EditorSelection = selections[selections.length - 1];
 	const selection = ed.getSelection();
@@ -137,9 +129,8 @@ export const getSelectionContent = (
 			to.ch === lastSelection.head.ch;
 		return { wordRange, word, isWordSelected };
 	}
-	return { wordRange: null, word: "", isWordSelected: false };
+	return { wordRange: null, word: '', isWordSelected: false };
 };
-
 
 export function getEditor(plugin: DuplicateLine): Editor | undefined {
 	const activeView = plugin.app.workspace.getActiveViewOfType(MarkdownView);

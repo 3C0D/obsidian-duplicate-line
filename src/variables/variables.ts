@@ -1,5 +1,4 @@
-import { type CommandConfig, type dupliSettings } from "./types.ts";
-
+import { type CommandConfig, type dupliSettings } from './types.ts';
 
 export enum Direction {
 	Up,
@@ -8,7 +7,7 @@ export enum Direction {
 	SelUp,
 	Left,
 	Right,
-	RightDown,
+	RightDown
 }
 
 export const DEFAULT_SETTINGS: dupliSettings = {
@@ -27,52 +26,51 @@ export const DEFAULT_SETTINGS: dupliSettings = {
 	showOccurences: true,
 	matchCase: false,
 	highlightOccurrences: true,
-	highlightColor: "#ffff00",
-	color: "#C6AB85",
+	highlightColor: '#ffff00',
+	color: '#C6AB85',
 	fontSize: 1.2
 };
 
 export const commandsToCreate: Array<CommandConfig> = [
 	{
-		id: "duplicate-line",
-		name: "Duplicate Line Down",
-		icon: "arrow-down-from-line",
+		id: 'duplicate-line',
+		name: 'Duplicate Line Down',
+		icon: 'arrow-down-from-line',
 		direction: Direction.Down,
-		condition: "lineDown",
-		desc: "recommanded shortcut shift alt ↓"
-
+		condition: 'lineDown',
+		desc: 'recommanded shortcut shift alt ↓'
 	},
 	{
-		id: "duplicate-line-up",
-		name: "Duplicate Line Up",
-		icon: "arrow-up-from-line",
+		id: 'duplicate-line-up',
+		name: 'Duplicate Line Up',
+		icon: 'arrow-up-from-line',
 		direction: Direction.Up,
-		condition: "lineUp",
-		desc: "recommanded shortcut shift alt ↑"
+		condition: 'lineUp',
+		desc: 'recommanded shortcut shift alt ↑'
 	},
 	{
-		id: "duplicate-selection-down",
-		name: "Duplicate Selection Down",
-		icon: "arrow-down",
+		id: 'duplicate-selection-down',
+		name: 'Duplicate Selection Down',
+		icon: 'arrow-down',
 		direction: Direction.SelDown,
-		condition: "selectionDown",
-		desc: "recommanded shortcut ctrl shift ↓"
+		condition: 'selectionDown',
+		desc: 'recommanded shortcut ctrl shift ↓'
 	},
 	{
-		id: "duplicate-selection-up",
-		name: "Duplicate Selection Up",
-		icon: "arrow-up",
+		id: 'duplicate-selection-up',
+		name: 'Duplicate Selection Up',
+		icon: 'arrow-up',
 		direction: Direction.SelUp,
-		condition: "selectionUp",
-		desc: "recommanded shortcut ctrl shift ↑"
+		condition: 'selectionUp',
+		desc: 'recommanded shortcut ctrl shift ↑'
 	},
 	{
-		id: "duplicate-line-right",
-		name: "Duplicate Selection Right",
-		icon: "arrow-right-from-line",
+		id: 'duplicate-line-right',
+		name: 'Duplicate Selection Right',
+		icon: 'arrow-right-from-line',
 		direction: Direction.Right,
-		condition: "selectionRight",
-		desc: "recommanded shortcut ctrl shift →"
+		condition: 'selectionRight',
+		desc: 'recommanded shortcut ctrl shift →'
 	},
 	// {
 	// 	id: "duplicate-line-left",
@@ -82,43 +80,43 @@ export const commandsToCreate: Array<CommandConfig> = [
 	// 	condition: "selectionLeft",
 	// },
 	{
-		id: "duplicate-line-right-down",
-		name: "Duplicate Selection Right/Line Down",
-		icon: "arrow-down-right",
+		id: 'duplicate-line-right-down',
+		name: 'Duplicate Selection Right/Line Down',
+		icon: 'arrow-down-right',
 		direction: Direction.RightDown,
-		condition: "mixRightDown",
-		desc: "if no selection: duplicate line down, else duplicate selection right "
+		condition: 'mixRightDown',
+		desc: 'if no selection: duplicate line down, else duplicate selection right '
 	},
 	{
-		id: "directional-move-right",
-		name: "Move Right",
-		icon: "arrow-right",
+		id: 'directional-move-right',
+		name: 'Move Right',
+		icon: 'arrow-right',
 		direction: Direction.Right,
-		condition: "moveRight",
-		desc: "recommanded shortcut alt →"
+		condition: 'moveRight',
+		desc: 'recommanded shortcut alt →'
 	},
 	{
-		id: "directional-move-left",
-		name: "Move Left",
-		icon: "arrow-left",
+		id: 'directional-move-left',
+		name: 'Move Left',
+		icon: 'arrow-left',
 		direction: Direction.Left,
-		condition: "moveLeft",
-		desc: "recommanded shortcut alt ←"
+		condition: 'moveLeft',
+		desc: 'recommanded shortcut alt ←'
 	},
 	{
-		id: "select-next-occurence",
-		name: "Add next occurence",
-		icon: "arrow-down-narrow-wide",
+		id: 'select-next-occurence',
+		name: 'Add next occurence',
+		icon: 'arrow-down-narrow-wide',
 		direction: null,
-		condition: "addNextOcc",
-		desc: "recommanded shortcut ctrl D"
+		condition: 'addNextOcc',
+		desc: 'recommanded shortcut ctrl D'
 	},
 	{
-		id: "select-all-occurence",
-		name: "Select all occurences",
-		icon: "bar-chart-horizontal",
+		id: 'select-all-occurence',
+		name: 'Select all occurences',
+		icon: 'bar-chart-horizontal',
 		direction: null,
-		condition: "selAllOcc",
-		desc: "recommanded shortcut ctrl shift L"
-	},
+		condition: 'selAllOcc',
+		desc: 'recommanded shortcut ctrl shift L'
+	}
 ];

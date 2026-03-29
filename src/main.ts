@@ -1,16 +1,23 @@
-import { Editor, type EditorChange, type EditorRange, type EditorTransaction, Platform, Plugin } from "obsidian";
-import { DuplicateLineSettings } from "./settings.ts";
-import type { CommandConfig, dupliSettings } from "./variables/types.ts";
+import {
+	Editor,
+	type EditorChange,
+	type EditorRange,
+	type EditorTransaction,
+	Platform,
+	Plugin
+} from 'obsidian';
+import { DuplicateLineSettings } from './settings.ts';
+import type { CommandConfig, dupliSettings } from './variables/types.ts';
 import {
 	areObjectsEqual,
 	isNoSelection,
 	selectionToLine,
-	selectionToRange,
-} from "./utils.ts";
-import { addNextOccurrence } from "./AddNextOccurrence.ts";
-import { addAllOccurrences } from "./AddAllOccurrences.ts";
-import { handleSelectionChange } from "./status-bar-occurences.ts";
-import { commandsToCreate, DEFAULT_SETTINGS, Direction } from "./variables/variables.ts";
+	selectionToRange
+} from './utils.ts';
+import { addNextOccurrence } from './AddNextOccurrence.ts';
+import { addAllOccurrences } from './AddAllOccurrences.ts';
+import { handleSelectionChange } from './status-bar-occurences.ts';
+import { commandsToCreate, DEFAULT_SETTINGS, Direction } from './variables/variables.ts';
 // import { createHighlightExtension } from "./highlight-extension";
 
 export default class DuplicateLine extends Plugin {
@@ -20,7 +27,7 @@ export default class DuplicateLine extends Plugin {
 	selectionRegex: RegExp | null;
 	nb: number;
 
-	async onload(): Promise<void>	 {
+	async onload(): Promise<void> {
 		await this.loadSettings();
 
 		this.addSettingTab(new DuplicateLineSettings(this.app, this));
@@ -36,15 +43,16 @@ export default class DuplicateLine extends Plugin {
 
 		//status bar occurences (desktop only)
 		if (Platform.isDesktopApp) {
-			this.registerDomEvent(document, 'selectionchange', () => handleSelectionChange(this));
+			this.registerDomEvent(document, 'selectionchange', () =>
+				handleSelectionChange(this)
+			);
 		}
 	}
 
 	createCommandsFromSettings(): void {
 		commandsToCreate.forEach((commandConfig) => {
 			const condition = commandConfig.condition;
-			const conditionValue =
-				this.settings[condition as keyof dupliSettings];
+			const conditionValue = this.settings[condition as keyof dupliSettings];
 			if (conditionValue) {
 				this.addCommandToEditor(commandConfig, condition);
 			}
@@ -57,24 +65,24 @@ export default class DuplicateLine extends Plugin {
 			icon: commandConfig.icon,
 			editorCallback: (editor) => {
 				if (commandConfig.direction != null) {
-					if (condition === "moveRight" || condition === "moveLeft") {
+					if (condition === 'moveRight' || condition === 'moveLeft') {
 						this.directionalMove(editor, commandConfig.direction);
 					} else {
 						this.duplicateLine(editor, commandConfig.direction);
 					}
-				} else if (condition === "addNextOcc") {
+				} else if (condition === 'addNextOcc') {
 					addNextOccurrence(editor, this);
-				} else if (condition === "selAllOcc") {
+				} else if (condition === 'selAllOcc') {
 					addAllOccurrences(editor, this);
 				}
-			},
+			}
 		});
 	}
 
 	async loadSettings(): Promise<void> {
 		this.settings = {
 			...DEFAULT_SETTINGS,
-			...(await this.loadData()),
+			...(await this.loadData())
 		};
 	}
 
@@ -93,10 +101,22 @@ export default class DuplicateLine extends Plugin {
 
 		const color = this.settings.highlightColor;
 		// Update CSS custom properties
-		document.documentElement.style.setProperty('--highlight-color-strong', hexToRgba(color, 0.4));
-		document.documentElement.style.setProperty('--highlight-color-medium', hexToRgba(color, 0.2));
-		document.documentElement.style.setProperty('--highlight-border-strong', hexToRgba(color, 0.8));
-		document.documentElement.style.setProperty('--highlight-border-medium', hexToRgba(color, 0.5));
+		document.documentElement.style.setProperty(
+			'--highlight-color-strong',
+			hexToRgba(color, 0.4)
+		);
+		document.documentElement.style.setProperty(
+			'--highlight-color-medium',
+			hexToRgba(color, 0.2)
+		);
+		document.documentElement.style.setProperty(
+			'--highlight-border-strong',
+			hexToRgba(color, 0.8)
+		);
+		document.documentElement.style.setProperty(
+			'--highlight-border-medium',
+			hexToRgba(color, 0.5)
+		);
 	}
 
 	duplicateLine = (editor: Editor, direction: Direction): void => {
@@ -114,11 +134,11 @@ export default class DuplicateLine extends Plugin {
 			let change: EditorChange;
 			let newAnchor = {
 				line: 0,
-				ch: 0,
+				ch: 0
 			};
 			let newHead = {
 				line: 0,
-				ch: 0,
+				ch: 0
 			};
 
 			if (this.newDirection) {
@@ -138,19 +158,19 @@ export default class DuplicateLine extends Plugin {
 				case Direction.Down:
 					newAnchor = {
 						line: anchor.line + addedLines,
-						ch: anchor.ch,
+						ch: anchor.ch
 					};
 
 					newHead = {
 						line: head.line + addedLines,
-						ch: head.ch,
+						ch: head.ch
 					};
 
 					{
 						change = {
 							from: to,
 							to: to,
-							text: "\n" + content,
+							text: '\n' + content
 						};
 					}
 					break;
@@ -158,61 +178,61 @@ export default class DuplicateLine extends Plugin {
 				case Direction.Up:
 					newAnchor = {
 						line: anchor.line + addedLines - numberOfLines,
-						ch: anchor.ch,
+						ch: anchor.ch
 					};
 
 					newHead = {
 						line: head.line + addedLines - numberOfLines,
-						ch: head.ch,
+						ch: head.ch
 					};
 
 					{
 						change = {
 							from: from,
 							to: from,
-							text: content + "\n",
+							text: content + '\n'
 						};
 					}
 					break;
 
 				case Direction.Left: {
-					if (this.settings.addSpaceBetween) content = content + " ";
+					if (this.settings.addSpaceBetween) content = content + ' ';
 
 					newAnchor = {
 						line: anchor.line,
-						ch: anchor.ch,
+						ch: anchor.ch
 					};
 
 					newHead = {
 						line: head.line,
-						ch: head.ch,
+						ch: head.ch
 					};
 
 					change = {
 						from: from,
 						to: from,
-						text: content,
+						text: content
 					};
 					break;
 				}
 
 				case Direction.Right: {
-					if (this.settings.addSpaceBetween) content = " " + content;
+					if (this.settings.addSpaceBetween) content = ' ' + content;
 
 					newAnchor = {
 						line: anchor.line,
-						ch: anchor.ch + content.length,
+						ch: anchor.ch + content.length
 					};
 
 					newHead = {
 						line: head.line,
-						ch: head.ch + content.length,
+						ch: head.ch + content.length
 					};
 
 					change = {
 						from: to,
 						to: to,
-						text: content,
+						text: content
 					};
 					break;
 				}
@@ -225,7 +245,7 @@ export default class DuplicateLine extends Plugin {
 								? 0
 								: numberOfLines === 1
 									? content.length
-									: anchorLength,
+									: anchorLength
 					};
 
 					newHead = {
@@ -236,7 +256,7 @@ export default class DuplicateLine extends Plugin {
 								? numberOfLines === 1
 									? content.length
 									: headLength
-								: 0,
+								: 0
 					};
 
 					const NewrangeLineTo = { line: to.line, ch: toLength };
@@ -244,7 +264,7 @@ export default class DuplicateLine extends Plugin {
 						change = {
 							from: NewrangeLineTo,
 							to: NewrangeLineTo,
-							text: "\n" + content,
+							text: '\n' + content
 						};
 					}
 
@@ -259,17 +279,13 @@ export default class DuplicateLine extends Plugin {
 								? 0
 								: numberOfLines === 1
 									? content.length
-									: anchorLength,
+									: anchorLength
 					};
 					newHead = {
 						line: sameDirection
 							? anchor.line + addedLines - 1
 							: head.line + addedLines - numberOfLines,
-						ch: isEmptySelection
-							? toLength
-							: sameDirection
-								? headLength
-								: 0,
+						ch: isEmptySelection ? toLength : sameDirection ? headLength : 0
 					};
 
 					const NewrangeLineFrom = { line: from.line, ch: 0 };
@@ -277,33 +293,29 @@ export default class DuplicateLine extends Plugin {
 						change = {
 							from: NewrangeLineFrom,
 							to: NewrangeLineFrom,
-							text: content + "\n",
+							text: content + '\n'
 						};
 					}
 					break;
 				}
 				case Direction.RightDown: {
 					if (this.settings.addSpaceBetween)
-						content = isEmptySelection ? content : " " + content;
+						content = isEmptySelection ? content : ' ' + content;
 
 					newAnchor = {
 						line: anchor.line,
-						ch: isEmptySelection
-							? toLength
-							: anchor.ch + content.length,
+						ch: isEmptySelection ? toLength : anchor.ch + content.length
 					};
 
 					newHead = {
 						line: head.line,
-						ch: isEmptySelection
-							? toLength
-							: head.ch + content.length,
+						ch: isEmptySelection ? toLength : head.ch + content.length
 					};
 
 					change = {
 						from: to,
 						to: to,
-						text: isEmptySelection ? "\n" + content : content,
+						text: isEmptySelection ? '\n' + content : content
 					};
 					break;
 				}
@@ -312,7 +324,7 @@ export default class DuplicateLine extends Plugin {
 			newSelectionRanges.push(
 				selectionToRange({
 					anchor: newAnchor,
-					head: newHead,
+					head: newHead
 				})
 			);
 
@@ -322,18 +334,15 @@ export default class DuplicateLine extends Plugin {
 		if (changes.length > 0) {
 			const transaction: EditorTransaction = {
 				changes: changes,
-				selections: newSelectionRanges,
+				selections: newSelectionRanges
 			};
 
-			const origin = "DirectionalCopy_" + String(direction);
+			const origin = 'DirectionalCopy_' + String(direction);
 			editor.transaction(transaction, origin);
 		}
 	};
 
-	directionalMove = (
-		editor: Editor,
-		direction: Direction,
-	): void => {
+	directionalMove = (editor: Editor, direction: Direction): void => {
 		const selections = editor.listSelections();
 		const changes: Array<EditorChange> = [];
 		for (const selection of selections) {
@@ -343,63 +352,71 @@ export default class DuplicateLine extends Plugin {
 			let deletionChange: EditorChange;
 			switch (direction) {
 				case Direction.Left: {
-					const isStart = (range.from.line === 0 && range.from.ch === 0);
+					const isStart = range.from.line === 0 && range.from.ch === 0;
 					const isLineStart = range.from.ch === 0;
 					// if ()
 					deletionChange = {
-						from: isStart ? {
-							line: range.from.line,
-							ch: range.from.ch,
-						} : isLineStart ? {
-							line: range.from.line - 1,
-							ch: editor.getLine(range.from.line - 1).length - 1,
-						} : {
-							line: range.from.line,
-							ch: range.from.ch - 1,
-						},
+						from: isStart
+							? {
+									line: range.from.line,
+									ch: range.from.ch
+								}
+							: isLineStart
+								? {
+										line: range.from.line - 1,
+										ch: editor.getLine(range.from.line - 1).length - 1
+									}
+								: {
+										line: range.from.line,
+										ch: range.from.ch - 1
+									},
 						to: range.from,
-						text: '',
+						text: ''
 					};
 
 					additionChange = {
 						from: range.to,
 						to: range.to,
-						 
-						text: editor.getRange(deletionChange.from, deletionChange.to!),
+
+						text: editor.getRange(deletionChange.from, deletionChange.to!)
 					};
 					break;
 				}
 				case Direction.Right: {
-					const isExtrem = (range.to.line === editor.lastLine() && range.to.ch === editor.getLine(range.to.line).length);
+					const isExtrem =
+						range.to.line === editor.lastLine() &&
+						range.to.ch === editor.getLine(range.to.line).length;
 
 					deletionChange = {
 						from: range.to,
-						to: isExtrem ? {
-							line: range.to.line,
-							ch: range.to.ch,
-						} : {
-							line: range.to.line,
-							ch: range.to.ch + 1,
-						},
-						text: '',
+						to: isExtrem
+							? {
+									line: range.to.line,
+									ch: range.to.ch
+								}
+							: {
+									line: range.to.line,
+									ch: range.to.ch + 1
+								},
+						text: ''
 					};
 
 					additionChange = {
 						from: range.from,
 						to: range.from,
-						 
-						text: editor.getRange(deletionChange.from, deletionChange.to!),
+
+						text: editor.getRange(deletionChange.from, deletionChange.to!)
 					};
 					break;
 				}
 			}
-			//@ts-ignore
+			//@ts-expect-error - to is not null because we are sure that from and to are not the same in deletionChange
 			changes.push(deletionChange, additionChange);
 		}
 
 		if (changes.length > 0) {
 			const transaction: EditorTransaction = {
-				changes: changes,
+				changes: changes
 			};
 
 			const origin = 'DirectionalMove_' + String(direction);
@@ -407,10 +424,3 @@ export default class DuplicateLine extends Plugin {
 		}
 	};
 }
-
-
-
-
-
-
-
